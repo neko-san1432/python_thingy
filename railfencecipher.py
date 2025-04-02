@@ -1,26 +1,27 @@
-def railFenceEncrypt(plaintext, depth):
-    if depth == 1:
+def railFenceEncrypt(plaintext, dp):
+    plaintext = spikeChecker(plaintext, dp)
+    if dp == 1:
         return plaintext
 
-    rail = ['' for _ in range(depth)]
+    rail = ['' for _ in range(dp)]
     row, step = 0, 1
 
     for char in plaintext:
         rail[row] += char
         if row == 0:
             step = 1
-        elif row == depth - 1:
+        elif row == dp - 1:
             step = -1
         row += step
 
     return ''.join(rail)
 
 
-def railFenceDecrypt(ciphertext, depth):
-    if depth == 1:
+def railFenceDecrypt(ciphertext, dpt):
+    if dpt == 1:
         return ciphertext
 
-    rail = [['\n' for _ in range(len(ciphertext))] for _ in range(depth)]
+    rail = [['\n' for _ in range(len(ciphertext))] for _ in range(dpt)]
 
     direction_down = None
     row, col = 0, 0
@@ -28,7 +29,7 @@ def railFenceDecrypt(ciphertext, depth):
     for _ in range(len(ciphertext)):
         if row == 0:
             direction_down = True
-        if row == depth - 1:
+        if row == dpt - 1:
             direction_down = False
 
         rail[row][col] = '*'
@@ -40,7 +41,7 @@ def railFenceDecrypt(ciphertext, depth):
             row -= 1
 
     index = 0
-    for i in range(depth):
+    for i in range(dpt):
         for j in range(len(ciphertext)):
             if rail[i][j] == '*' and index < len(ciphertext):
                 rail[i][j] = ciphertext[index]
@@ -51,7 +52,7 @@ def railFenceDecrypt(ciphertext, depth):
     for _ in range(len(ciphertext)):
         if row == 0:
             direction_down = True
-        if row == depth - 1:
+        if row == dpt - 1:
             direction_down = False
 
         result.append(rail[row][col])
@@ -63,6 +64,19 @@ def railFenceDecrypt(ciphertext, depth):
             row -= 1
 
     return ''.join(result)
+
+
+def spikeChecker(t, d):
+    step_size = (d * 2) - 2
+    current_index = d - 1
+    try:
+        while True:
+            _ = t[current_index]
+            current_index += step_size
+    except IndexError:
+        remaining_chars = (len(t) - 1) - current_index
+        t += 'x' *(remaining_chars*-1)
+        return t
 
 
 # Example usage:
